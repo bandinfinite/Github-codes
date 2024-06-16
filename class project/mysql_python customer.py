@@ -55,5 +55,13 @@ def update():
         if i[3].lower() == 'd':
             nbal = i[1]+i[2]
             q='update customer set balance= {} where cid={}'.format(nbal,i[0])
-            
+            cur.execute(q)
+            con.commit()
+        elif i[3].lower() == 'w':
+            nbal = i[1]-i[2]
+            q='update customer set balance= {} where cid={}'.format(nbal,i[0])
+            cur.execute(q)
+            con.commit()
+        
+        
 
