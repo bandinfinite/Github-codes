@@ -12,7 +12,8 @@ con = mysql.connector.connect(
 
 cur = con.cursor()
 
-def log():
+
+def log(event):
     q = "select tid,tpass from teacher"
     cur.execute(q)
     tdata = cur.fetchall()
@@ -28,6 +29,7 @@ def log():
     if loginpass.get() == "admin":
 
         admin()
+
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
@@ -45,19 +47,69 @@ def log():
     else:
         tkmb.showwarning("Invail ID")
 
-    
-
 
 def admin():
     adwin = tk.CTk()
     adwin.state("zoomed")
     adwin.geometry("1300x700+0+0")
 
-    adtab = tk.CTkTabview(adwin)
-    adtab.pack()
-    diste=adtab.add('Display Teacher')
-    distub=adtab.add('Display Student Bio')
-    distum=adtab.add('Display Student mark')
+    adtab = tk.CTkTabview(adwin, width=1300, height=650)
+    adtab.pack(padx=20, pady=20)
+    distea = adtab.add("Display Teacher")
+    distub = adtab.add("Display Student Bio")
+    distum = adtab.add("Display Student mark")
+    adstub = adtab.add("Add Student bio")
+    adstum = adtab.add("Add Student mark")
+    adtea = adtab.add("Add Teacher")
+    astea = adtab.add("Assign class For teacher")
+
+    # display teacher
+    tree1 = ttk.Treeview(distea, height=600)
+    tree1.pack(padx=10, pady=10)
+    tree1["columns"] = ("tid", "tname", "classt", "tclasses")
+    tree1.column("#0", width=0, anchor="center")
+    tree1.column("tid", width=100, anchor="center")
+    tree1.column("tname", width=200, anchor="center")
+    tree1.column("classt", width=100, anchor="center")
+    tree1.column("tclasses", width=200, anchor="center")
+
+    tree1.heading("tid", text="Teacher_Id")
+    tree1.heading("tname", text="Teacher_Name")
+    tree1.heading("classt", text="Class teacher of")
+    tree1.heading("tclasses", text="Handling Classes")
+
+    q1 = "select tid,tname,classt,tclasses from teacher"
+    cur.execute(q1)
+    tdata = cur.fetchall()
+
+    for i in range(len(tdata)):
+        tree1.insert(parent="", index="end", iid=i, values=tdata[i])
+
+    # dispay studentbio
+    tree2 = ttk.Treeview(distub, height=600)
+    tree2.pack(padx=10, pady=10)
+    tree2["columns"] = ("admnid", "sname", "sclass", "dob", "fname", "mname")
+    tree2.column("#0", width=0, anchor="center")
+    tree2.column("admnid", width=100, anchor="center")
+    tree2.column("sname", width=200, anchor="center")
+    tree2.column("sclass", width=100, anchor="center")
+    tree2.column("dob", width=100, anchor="center")
+    tree2.column("fname", width=200, anchor="center")
+    tree2.column("mname", width=200, anchor="center")
+
+    tree2.heading("admnid", text="Admission_Id")
+    tree2.heading("sname", text="Student_Name")
+    tree2.heading("sclass", text="Student_Class")
+    tree2.heading("dob", text="Date of Birth")
+    tree2.heading("fname", text="Father_Name")
+    tree2.heading("mname", text="Mother_Name")
+
+    q2 = "select admnid,sname,sclass,dob,fname,mname from studentbio"
+    cur.execute(q2)
+    sdata = cur.fetchall()
+
+    for i in range(len(sdata)):
+        tree2.insert(parent="", index="end", iid=i, values=sdata[i])
 
     adwin.mainloop()
 
@@ -76,8 +128,6 @@ def student():
     swin.mainloop()
 
 
-
-
 loginwin = tk.CTk()
 loginwin.geometry("400x300+500+200")
 loginwin.title("Login Window")
@@ -94,8 +144,8 @@ loginid.grid(row=1, column=0, padx=10, pady=20)
 loginpass = tk.CTkEntry(logframe, placeholder_text="Enter your password", width=250)
 loginpass.grid(row=2, column=0, padx=10, pady=10)
 
-logbutton = tk.CTkButton(logframe, text="Login",command=log)
+logbutton = tk.CTkButton(logframe, text="Login", command=log)
 logbutton.grid(row=3, column=0, padx=20, pady=20)
+loginpass.bind("<Return>", command=log)
 
 loginwin.mainloop()
-
