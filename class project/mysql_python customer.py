@@ -2,7 +2,7 @@ import mysql.connector
 from tabulate import tabulate
 
 con = mysql.connector.connect(
-    host="localhost", user="root", password="Narenguru2007", database="naren12a"
+    host="localhost", user="root", password="devi", database="naren12a"
 )
 
 if con.is_connected():
