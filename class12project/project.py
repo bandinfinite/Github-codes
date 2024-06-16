@@ -53,8 +53,11 @@ def admin():
     adwin.state("zoomed")
     adwin.geometry("1300x700+0+0")
 
-    
-
+    adtab = tk.CTkTabview(adwin)
+    adtab.pack()
+    diste=adtab.add('Display Teacher')
+    distub=adtab.add('Display Student Bio')
+    distum=adtab.add('Display Student mark')
 
     adwin.mainloop()
 
