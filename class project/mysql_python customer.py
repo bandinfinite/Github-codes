@@ -2,7 +2,7 @@ import mysql.connector
 from tabulate import tabulate
 
 con = mysql.connector.connect(
-    host="localhost", user="root", password="devi", database="naren12a"
+    host="localhost", user="root", password="Narenguru2007", database="naren12a"
 )
 
 if con.is_connected():
@@ -39,7 +39,7 @@ def select():
 
 
 def create_transaction():
-    q = "create table transaction(tid int auto_increment primary key ,cid int,tdate date ,amt float, ttype varchar(10))"
+    q = "create table transaction(tid int auto_increment primary key ,cid int,tdate date ,amt float, ttype varchar(10),up varchar(5))"
     cur.execute(q)
     con.commit()
     print("created succesful")
@@ -50,7 +50,7 @@ def insert_transaction():
     tdate = input("Enter the transaction data:")
     amt = input("Enter transaction amount:")
     ttype = input("Enter transaction type(d,w):")
-    q = 'insert into transaction(cid,tdate,amt,ttype) values({},"{}",{},"{}")'.format(
+    q = 'insert into transaction(cid,tdate,amt,ttype,up) values({},"{}",{},"{}","n")'.format(
         cid, tdate, amt, ttype
     )
     cur.execute(q)
@@ -59,19 +59,23 @@ def insert_transaction():
 
 
 def update():
-    q = "select c.cid, c.balance,t.amt,t.ttype from customer c , transaction t where c.cid=t.cid"
+    q = "select c.cid, t.tid,c.balance,t.amt,t.ttype from customer c , transaction t where c.cid=t.cid and up ='n'"
     cur.execute(q)
     data = cur.fetchall()
     for i in data:
-        if i[3].lower() == "d":
-            nbal = i[1] + i[2]
+        if i[4].lower() == "d":
+            nbal = i[2] + i[3]
             q = "update customer set balance= {} where cid={}".format(nbal, i[0])
             cur.execute(q)
+            q1 = "update transaction set up='y' where tid={}".format(i[1])
+            cur.execute(q1)
             con.commit()
-        elif i[3].lower() == "w":
-            nbal = i[1] - i[2]
+        elif i[4].lower() == "w":
+            nbal = i[2] - i[2]
             q = "update customer set balance= {} where cid={}".format(nbal, i[0])
             cur.execute(q)
+            q1 = "update transaction set up='y' where tid={}".format(i[1])
+            cur.execute(q1)
             con.commit()
         print(i[0], nbal)
     print("Updated succesfully")
