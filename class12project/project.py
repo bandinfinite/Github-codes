@@ -81,7 +81,7 @@ def log():
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     else:
-        tkmb.showwarning("Invail ID")
+        tkmb.showwarning("Invail ID","Invaild Id")
 
 
 def admin():
