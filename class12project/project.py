@@ -21,7 +21,7 @@ def log_event(event):
     tid = [i[0] for i in tdata]
     tpass = [i[1] for i in tdata]
 
-    q1 = "select admnid,spass from studentbio"
+    q1 = "select sid,spass from studentbio"
     cur.execute(q1)
     sdata = cur.fetchall()
     sid = [i[0] for i in sdata]
