@@ -34,14 +34,14 @@ def log_event(event):
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
-            teacher()
+            teacher(loginid.get())
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
 
-            student()
+            student(loginid.get())
 
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
@@ -69,14 +69,14 @@ def log():
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
-            teacher()
+            teacher(loginid.get())
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
 
-            student()
+            student(loginid.get())
 
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
@@ -113,7 +113,7 @@ def admin():
     tree1.heading("classt", text="Class teacher of")
     tree1.heading("tclasses", text="Handling Classes")
 
-    q1 = "select tid,tname,classt,tclasses from teacher"
+    q1 = "select tid,tname,class_teacher,handling_classes from teacher"
     cur.execute(q1)
     tdata = cur.fetchall()
 
@@ -125,9 +125,9 @@ def admin():
         cur = con.cursor()
 
         if x == "All":
-            sql = f"select * from studentbio"
+            sql = f"select sid,sname,sclass,dob,fname,mname from studentbio"
         else:
-            sql = f"select * from studentbio where sclass = '{x}'"
+            sql = f"select sid,sname,sclass,dob,fname,mname from studentbio where sclass = '{x}'"
         cur.execute(sql)
         return cur.fetchall()
 
@@ -238,20 +238,112 @@ def admin():
 
     for i in range(len(smdata)):
         tree3.insert(parent="", index="end", iid=i, values=smdata[i])  # type: ignore
+
+    #add student bio
+    inframe = tk.CTkFrame(adstub)
+    inframe.pack()
+    adidlab = tk.CTkLabel(inframe, text="Admn_Id", font=("Arial", 24))
+    adidlab.grid(row=0, column=0, padx=20, pady=30)
+    adiden = tk.CTkEntry(
+        inframe,
+        placeholder_text="Enter the Admission ID of Student",
+        width=210,
+        height=32,
+    )
+    adiden.grid(row=0, column=1, padx=20, pady=30)
+
+    namelab = tk.CTkLabel(inframe, text="Name", font=("Arial", 24))
+    namelab.grid(row=0, column=3, padx=20, pady=30)
+    namen = tk.CTkEntry(
+        inframe, placeholder_text="Enter the Name of Student", width=200, height=32
+    )
+    namen.grid(row=0, column=4, padx=20, pady=30)
+
+    class_seclab = tk.CTkLabel(inframe, text="Class_Sec", font=("Arial", 24))
+    class_seclab.grid(row=1, column=0, padx=20, pady=30)
+    classcombo = ttk.Combobox(inframe, width=20, values=getval(), state="readonly")
+    classcombo.grid(row=1, column=1, padx=20, pady=30)
+
+    doblab = tk.CTkLabel(inframe, text="Dob", font=("Arial", 24))
+    doblab.grid(row=1, column=3, padx=20, pady=30)
+    doben = tk.CTkEntry(
+        inframe, placeholder_text="Enter the Dob of Student", width=200, height=32
+    )
+    doben.grid(row=1, column=4, padx=20, pady=30)
+
+    fnamelab = tk.CTkLabel(inframe, text="Father Name", font=("Arial", 24))
+    fnamelab.grid(row=2, column=0, padx=20, pady=30)
+    fnamen = tk.CTkEntry(
+        inframe,
+        placeholder_text="Enter the Father Name of Student",
+        width=200,
+        height=32,
+    )
+    fnamen.grid(row=2, column=1, padx=20, pady=30)
+
+    mnamelab = tk.CTkLabel(inframe, text="Mother Name", font=("Arial", 24))
+    mnamelab.grid(row=2, column=3, padx=20, pady=30)
+    mnamen = tk.CTkEntry(
+        inframe,
+        placeholder_text="Enter the Mother Name of Student",
+        width=210,
+        height=32,
+    )
+    mnamen.grid(row=2, column=4, padx=20, pady=30)
+
+    spassl = tk.CTkLabel(inframe,text='Password',font=('Arial',24))
+    spassl.grid(row=3,column=0)
+    spassn = tk.CTkEntry(inframe,placeholder_text='Enter the password of the student',width=260,height=32)
+    spassn.grid(row=3,column=1)
+
+    def submit():
+        admn = adiden.get() or "NULL"
+        name = namen.get() or "NULL"
+        class_sec = classcombo.get() or "NULL"
+        dob = doben.get() or "NULL"
+        fname = fnamen.get() or "NUll"
+        mname = mnamen.get() or "NULL"
+        spass = spassn.get()
+        cur = con.cursor()
+        sql = f"insert into studentbio values({admn},'{spass}','{name}','{class_sec}','{dob}','{fname}','{mname}')"
+        cur.execute(sql)
+        con.commit()
+        adiden.delete(0, END)
+        namen.delete(0, END)
+        doben.delete(0, END)
+        fnamen.delete(0, END)
+        mnamen.delete(0, END)
+        spassn.delete(0,END)
+        tkmb.showinfo("Insert", "Inserted Succesfully")
+        adtab.set('Add Student bio')
+        
+
+    
+
+    getbut = tk.CTkButton(adstub, text="Submit", command=submit)
+    getbut.pack(pady=30)
+    
+
     adwin.mainloop()
 
+    
+    
+    
 
-def teacher():
+def teacher(tid):
     twin = tk.CTk()
     twin.state("zoomed")
     twin.geometry("1300x700+0+0")
+    twin.title(tid)
     twin.mainloop()
 
 
-def student():
+def student(sid):
     swin = tk.CTk()
     swin.state("zoomed")
     swin.geometry("1300x700+0+0")
+    swin.title(sid)
+    
     swin.mainloop()
 
 
