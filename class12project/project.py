@@ -35,15 +35,17 @@ def log_event(event):
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
+            a=loginid.get()
             loginwin.destroy()
-            teacher(loginid.get())
+            teacher(a)
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
+            a=loginid.get()
             loginwin.destroy()
-            student(loginid.get())
+            student(a)
 
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
@@ -72,16 +74,17 @@ def log():
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
+            a=loginid.get()
             loginwin.destroy()
-            teacher(loginid.get())
+            teacher(a)
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
+            a=loginid.get()
             loginwin.destroy()
-
-            student(loginid.get())
+            student(a)
 
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
@@ -433,7 +436,6 @@ def teacher(tid):
 
 def student(sid):
     swin = tk.CTk()
-    swin.state("zoomed")
     swin.geometry("1300x700+0+0")
     swin.title(sid)
     
