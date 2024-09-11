@@ -28,19 +28,21 @@ def log_event(event):
     spass = [i[1] for i in sdata]  # type: ignore
 
     if loginpass.get() == "admin":
-
+        loginwin.destroy()
         admin()
+        
 
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
+            loginwin.destroy()
             teacher(loginid.get())
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
-
+            loginwin.destroy()
             student(loginid.get())
 
         else:
@@ -63,18 +65,21 @@ def log():
     spass = [i[1] for i in sdata]  # type: ignore
 
     if loginpass.get() == "admin":
+        loginwin.destroy()
 
         admin()
 
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
+            loginwin.destroy()
             teacher(loginid.get())
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
+            loginwin.destroy()
 
             student(loginid.get())
 
@@ -136,7 +141,14 @@ def admin():
             tree2.delete(j)
         inval = getstub(combo.get())
         for i in range(len(inval)):
-            tree2.insert(parent="", index="end", iid=i, values=inval[i])  # type: ignore
+            tree2.insert(parent="", index="end", iid=i, values=inval[i])
+
+    def changein():
+        for j in tree2.get_children():
+            tree2.delete(j)
+        inval = getstub(combo.get())
+        for i in range(len(inval)):
+            tree2.insert(parent="", index="end", iid=i, values=inval[i])
 
     val = getval()
     val.insert(0, "All")
@@ -315,7 +327,8 @@ def admin():
         mnamen.delete(0, END)
         spassn.delete(0,END)
         tkmb.showinfo("Insert", "Inserted Succesfully")
-        adtab.set('Add Student bio')
+        adtab.set('Display Student Bio')
+        changein()
         
 
     
@@ -323,6 +336,86 @@ def admin():
     getbut = tk.CTkButton(adstub, text="Submit", command=submit)
     getbut.pack(pady=30)
     
+    #add teacher
+    def gettb():
+        cur=con.cursor()
+        q='select tid,tname,class_teacher,handling_classes from teacher'
+        cur.execute(q)
+        return cur.fetchall()
+    def tchangein():
+        for j in tree1.get_children():
+            tree1.delete(j)
+        inval = gettb()
+        for i in range(len(inval)):
+            tree1.insert(parent="", index="end", iid=i, values=inval[i])
+
+    
+    inframe1 = tk.CTkFrame(adtea)
+    inframe1.pack()
+    tidlab = tk.CTkLabel(inframe1, text="Teacher_Id", font=("Arial", 24))
+    tidlab.grid(row=0, column=0, padx=20, pady=30)
+    tiden = tk.CTkEntry(
+        inframe1,
+        placeholder_text="Enter the teacher ID of the Teacher",
+        width=210,
+        height=32,
+    )
+    tiden.grid(row=0, column=1, padx=20, pady=30)
+
+    tnamelab = tk.CTkLabel(inframe1, text="Name", font=("Arial", 24))
+    tnamelab.grid(row=0, column=3, padx=20, pady=30)
+    tnamen = tk.CTkEntry(
+        inframe1, placeholder_text="Enter the Name of the Teacher", width=200, height=32
+    )
+    tnamen.grid(row=0, column=4, padx=20, pady=30)
+
+    class_teacherlab = tk.CTkLabel(inframe1, text="Class_Teacher_of", font=("Arial", 24))
+    class_teacherlab.grid(row=1, column=0, padx=20, pady=30)
+    tclasscombo = ttk.Combobox(inframe1, width=20, values=getval(), state="readonly")
+    tclasscombo.grid(row=1, column=1, padx=20, pady=30)
+
+    handling_class = tk.CTkLabel(inframe1, text="Handling_Classes", font=("Arial", 24))
+    handling_class.grid(row=1, column=3, padx=20, pady=30)
+    hanen = tk.CTkEntry(
+        inframe1, placeholder_text="Enter the Handling Classes", width=200, height=32
+    )
+    hanen.grid(row=1, column=4, padx=20, pady=30)
+
+    tpasslab = tk.CTkLabel(inframe1, text="Teacher Password", font=("Arial", 24))
+    tpasslab.grid(row=2, column=0, padx=20, pady=30)
+    tpassen = tk.CTkEntry(
+        inframe1,
+        placeholder_text="Enter the Password of Teacher",
+        width=200,
+        height=32,
+    )
+    tpassen.grid(row=2, column=1, padx=20, pady=30)
+
+    
+
+    def tsubmit():
+        tid = tiden.get() or "NULL"
+        tname = tnamen.get() or "NULL"
+        classt = tclasscombo.get() or "NULL"
+        hanclass = hanen.get() or "NULL"
+        tpass1 = tpassen.get() or "NUll"
+        cur = con.cursor()
+        sql = f"insert into teacher values({tid},'{tpass1}','{tname}','{classt}','{hanclass}')"
+        cur.execute(sql)
+        con.commit()
+        tiden.delete(0, END)
+        tnamen.delete(0, END)
+        hanen.delete(0, END)
+        tpassen.delete(0, END)
+        tkmb.showinfo("Insert", "Inserted Succesfully")
+        adtab.set("Display Teacher")
+
+        tchangein()
+
+    getbut = tk.CTkButton(adtea, text="Submit", command=tsubmit)
+    getbut.pack(pady=30)
+    
+
 
     adwin.mainloop()
 
