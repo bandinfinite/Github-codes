@@ -3,7 +3,7 @@ from tkinter import *  # type: ignore
 from tkinter import ttk
 import mysql.connector
 import tkinter.messagebox as tkmb
-import time
+from CTkScrollableDropdown import *
 
 tk.set_appearance_mode("dark")
 tk.set_default_color_theme("blue")
@@ -466,7 +466,9 @@ def admin():
     
 def t_mksadd():
     def change_marks():
-    
+        examval = exam.get()
+        markval = mark.get()
+        entryval = entry.get() 
         q = f'update studentmark set {examval} = {markval} where sid = {entryval}'
         cur.execute(q)
         donewindow = Tk()
@@ -484,15 +486,15 @@ def t_mksadd():
     entry = tk.CTkEntry(mksadd, width=200, placeholder_text='Enter the roll number')
     entry.focus()
     entry.pack()
-    entryval = entry.get() ; print(entryval)
     exam = tk.CTkComboBox(mksadd, width = 200, values = ["ut1_sub1",'ut1_sub2','ut1_sub3','ut1_sub4','ut1_sub5','ut2_sub1','ut2_sub2','ut2_sub3','ut2_sub4','ut2_sub5','ut3_sub1','ut3_sub2','ut3_sub3','ut3_sub4','ut3_sub5','qt1_sub1','qt1_sub2','qt1_sub3','qt1_sub4','qt1_sub5','ut4_sub1','ut4_sub2','ut4_sub3','ut4_sub4','ut4_sub5','ut5_sub1','ut5_sub2','ut5_sub3','ut5_sub4','ut5_sub5','ht1_sub1','ht1_sub2','ht1_sub3','ht1_sub4','ht1_sub5','at1_sub1','at1_sub2','at1_sub3','at1_sub4','at1_sub5'])
+    values = ["ut1_sub1",'ut1_sub2','ut1_sub3','ut1_sub4','ut1_sub5','ut2_sub1','ut2_sub2','ut2_sub3','ut2_sub4','ut2_sub5','ut3_sub1','ut3_sub2','ut3_sub3','ut3_sub4','ut3_sub5','qt1_sub1','qt1_sub2','qt1_sub3','qt1_sub4','qt1_sub5','ut4_sub1','ut4_sub2','ut4_sub3','ut4_sub4','ut4_sub5','ut5_sub1','ut5_sub2','ut5_sub3','ut5_sub4','ut5_sub5','ht1_sub1','ht1_sub2','ht1_sub3','ht1_sub4','ht1_sub5','at1_sub1','at1_sub2','at1_sub3','at1_sub4','at1_sub5']
     exam.pack(padx = 5, pady = 5)
     exam.set("Select test")
-    examval = exam.get()
+    CTkScrollableDropdown(exam, values=values, justify="left", button_color="transparent")
+    
     mark = tk.CTkEntry(mksadd, width = 200, placeholder_text="Enter mark :" )
     mark.focus()
     mark.pack()
-    markval = mark.get() ; print(markval)
     dobut = tk.CTkButton(mksadd, width = 200, text="Click to do the changes", command = change_marks)
     dobut.pack()
     
