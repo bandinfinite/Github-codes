@@ -14,6 +14,9 @@ con = mysql.connector.connect(
 cur = con.cursor()
 
 
+
+
+
 def log_event(event):
     q = "select tid,tpass from teacher"
     cur.execute(q)
@@ -102,7 +105,6 @@ def admin():
     distub = adtab.add("Display Student Bio")
     distum = adtab.add("Display Student mark")
     adstub = adtab.add("Add Student bio")
-    adstum = adtab.add("Add Student mark")
     adtea = adtab.add("Add Teacher")
     astea = adtab.add("Assign class For teacher")
 
@@ -417,19 +419,100 @@ def admin():
 
     getbut = tk.CTkButton(adtea, text="Submit", command=tsubmit)
     getbut.pack(pady=30)
-    
+
+
+    #assign a class for teacher
+
+    atframe = tk.CTkFrame(astea)
+    atframe.pack()
+    astidlab = tk.CTkLabel(atframe, text="Teacher_Id", font=("Arial", 24))
+    astidlab.grid(row=0, column=0, padx=20, pady=30)
+    astiden = tk.CTkEntry(
+        atframe,
+        placeholder_text="Enter the teacher ID of the Teacher",
+        width=220,
+        height=32,
+    )
+    astiden.grid(row=0, column=1, padx=20, pady=30)
+
+    asclasslab = tk.CTkLabel(atframe, text="Handling_Classes", font=("Arial", 24))
+    asclasslab.grid(row=1, column=0, padx=20, pady=30)
+    asen = tk.CTkEntry(
+        atframe, placeholder_text="Enter the Classes to assign", width=200, height=32
+    )
+    asen.grid(row=1, column=1, padx=20, pady=30)
+
+    def updateclass():
+        astid = astiden.get()
+        asclass = asen.get()
+        asclass=','+asclass
+        q=f"update teacher set handling_classes = concat(handling_classes,'{asclass}') where tid={astid}"
+        cur=con.cursor()
+        cur.execute(q)
+        con.commit()
+        astiden.delete(0,END)
+        asen.delete(0,END)
+        tkmb.showinfo("Update", "Updated Succesfully")
+        adtab.set('Display Teacher')
+        tchangein()
+        
+    getbut2 = tk.CTkButton(astea, text="Submit", command=updateclass)
+    getbut2.pack(pady=30)
 
 
     adwin.mainloop()
 
     
     
+def t_mksadd():
+    def change_marks():
+    
+        q = f'update studentmark set {examval} = {markval} where sid = {entryval}'
+        cur.execute(q)
+        donewindow = Tk()
+        donewindow.title("DONE!")
+        donewindow.mainloop()
+    
+    mksadd = tk.CTk()
+    mksadd.geometry("800x600")
+    mksadd.resizable(width = False, height = False)
+    mksadd.title("Modify Marks")
+    cb = tk.CTkComboBox(master = mksadd, values = ["1A" , "1B"], state='readonly', justify = 'left', width=200)
+    cb.pack(padx = 5, pady = 5)
+    cb.set("Select class")
+
+    entry = tk.CTkEntry(mksadd, width=200, placeholder_text='Enter the roll number')
+    entry.focus()
+    entry.pack()
+    entryval = entry.get() ; print(entryval)
+    exam = tk.CTkComboBox(mksadd, width = 200, values = ["ut1_sub1",'ut1_sub2','ut1_sub3','ut1_sub4','ut1_sub5','ut2_sub1','ut2_sub2','ut2_sub3','ut2_sub4','ut2_sub5','ut3_sub1','ut3_sub2','ut3_sub3','ut3_sub4','ut3_sub5','qt1_sub1','qt1_sub2','qt1_sub3','qt1_sub4','qt1_sub5','ut4_sub1','ut4_sub2','ut4_sub3','ut4_sub4','ut4_sub5','ut5_sub1','ut5_sub2','ut5_sub3','ut5_sub4','ut5_sub5','ht1_sub1','ht1_sub2','ht1_sub3','ht1_sub4','ht1_sub5','at1_sub1','at1_sub2','at1_sub3','at1_sub4','at1_sub5'])
+    exam.pack(padx = 5, pady = 5)
+    exam.set("Select test")
+    examval = exam.get()
+    mark = tk.CTkEntry(mksadd, width = 200, placeholder_text="Enter mark :" )
+    mark.focus()
+    mark.pack()
+    markval = mark.get() ; print(markval)
+    dobut = tk.CTkButton(mksadd, width = 200, text="Click to do the changes", command = change_marks)
+    dobut.pack()
+    
+    mksadd.mainloop()
+
     
 
 def teacher(tid):
     twin = tk.CTk()
     twin.state("zoomed")
     twin.geometry("1300x700+0+0")
+    
+    tcode = tk.CTkLabel(twin, text=f'Teacher Code\n{tid}', font = ('Arial', 25) )
+    tcode.place(x = 100, y = 300)
+
+    option_addmks = tk.CTkButton(master = twin, text = "Modify Marks", command = t_mksadd,hover=True)
+    option_addmks.place(x = 300, y = 300)
+
+
+    
     twin.title(tid)
     twin.mainloop()
 
