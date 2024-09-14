@@ -3,7 +3,7 @@ from tkinter import *  # type: ignore
 from tkinter import ttk
 import mysql.connector
 import tkinter.messagebox as tkmb
-import time
+import docx
 
 tk.set_appearance_mode("dark")
 tk.set_default_color_theme("blue")
@@ -12,45 +12,6 @@ con = mysql.connector.connect(
 )
 
 cur = con.cursor()
-
-def t_mksadd():
-    def change_marks():
-    
-        q = f'update studentmark set {examval} = {markval} where sid = {entryval}'
-        cur.execute(q)
-        donewindow = Tk()
-        donewindow.title("DONE!")
-        donewindow.mainloop()
-    
-    mksadd = tk.CTk()
-    mksadd.geometry("800x600")
-    mksadd.resizable(width = False, height = False)
-    mksadd.title("Modify Marks")
-    cb = tk.CTkComboBox(master = mksadd, values = ["1A" , "1B"], state='readonly', justify = 'left', width=200)
-    cb.pack(padx = 5, pady = 5)
-    cb.set("Select class")
-
-    entry = tk.CTkEntry(mksadd, width=200, placeholder_text='Enter the roll number')
-    entry.focus()
-    entry.pack()
-    entryval = entry.get() ; print(entryval)
-    exam = tk.CTkComboBox(mksadd, width = 200, values = ["ut1_sub1",'ut1_sub2','ut1_sub3','ut1_sub4','ut1_sub5','ut2_sub1','ut2_sub2','ut2_sub3','ut2_sub4','ut2_sub5','ut3_sub1','ut3_sub2','ut3_sub3','ut3_sub4','ut3_sub5','qt1_sub1','qt1_sub2','qt1_sub3','qt1_sub4','qt1_sub5','ut4_sub1','ut4_sub2','ut4_sub3','ut4_sub4','ut4_sub5','ut5_sub1','ut5_sub2','ut5_sub3','ut5_sub4','ut5_sub5','ht1_sub1','ht1_sub2','ht1_sub3','ht1_sub4','ht1_sub5','at1_sub1','at1_sub2','at1_sub3','at1_sub4','at1_sub5'])
-    exam.pack(padx = 5, pady = 5)
-    exam.set("Select test")
-    examval = exam.get()
-    mark = tk.CTkEntry(mksadd, width = 200, placeholder_text="Enter mark :" )
-    mark.focus()
-    mark.pack()
-    markval = mark.get() ; print(markval)
-    dobut = tk.CTkButton(mksadd, width = 200, text="Click to do the changes", command = change_marks)
-    dobut.pack()
-    
-    mksadd.mainloop()
-
-    
-    
-    
-
 
 def log_event(event):
     q = "select tid,tpass from teacher"
@@ -191,7 +152,7 @@ def admin():
         for i in range(len(inval)):
             tree2.insert(parent="", index="end", iid=i, values=inval[i])
 
-    val = getval()
+    val = getval() 
     val.insert(0, "All")
     combo = ttk.Combobox(distub, width=20, values=val, state="readonly")
     combo.pack(pady=10)
@@ -475,10 +436,96 @@ def teacher(tid):
     option_addmks = tk.CTkButton(master = twin, text = "Modify Marks", command = t_mksadd,hover=True)
     option_addmks.place(x = 300, y = 300)
 
-
-    
+    option_generaterpcard = tk.CTkButton(master = twin, text = "Generate a report card", command=generate)
+    option_generaterpcard.place(x=450,y=300)
     twin.title(tid)
     twin.mainloop()
+def generate():
+    def dummyfunc():
+        id1 = stuid.get()
+        q1 = f"select * from studentbio where sid = {id1}"
+        cur.execute(q1)
+        data1= cur.fetchall()
+        q2 =f"select * from studentmark where sid = {id1}"
+        cur.execute(q2)
+        data2 = cur.fetchall()
+        doc = docx.Document()
+        doc.add_heading('Report Card', 0)
+        doc.add_heading('BIODATA', level=1)
+        doc.add_paragraph(f'Father name : {data1[0][5]}')
+        doc.add_paragraph(f'Mother\'s name : {data1[0][6]}')
+        doc.add_paragraph(f'Student Name : {data1[0][2]}')
+        doc.add_paragraph(f'Class and Section : {data1[0][3]}')
+        doc.add_paragraph(f'Date Of Birth : {data1[0][4]}')
+        doc.add_page_break()
+        doc.add_heading('Marks', level = 1)
+        record = data1[0]
+        tab = doc.add_table(rows = 1, cols= 9)
+        tab.style = 'Colorful List'
+        header_cell = tab.rows[0].cells
+        header_cell[0].text = 'Subject'
+        header_cell[1].text = 'UT-1'
+        header_cell[2].text = 'UT-2'
+        header_cell[3].text = 'UT-3'
+        header_cell[4].text = 'QT'
+        header_cell[5].text = 'UT-4'
+        header_cell[6].text = 'UT-5'
+        header_cell[7].text = 'HT'
+        header_cell[8].text = 'AT'
+        
+        for i in data2:
+            for j in range(0,5):
+                row_cells = tab.add_row().cells
+                if j==0:
+                    row_cells[0].text = 'Sub1'
+                    
+                elif j==1:
+                    row_cells[0].text = 'Sub2'
+                    
+                elif j==2:
+                    row_cells[0].text = 'Sub3'
+                    
+                elif j==3:
+                    row_cells[0].text = 'Sub4'
+                    
+                elif j==4:
+                    row_cells[0].text = 'Sub5'
+                row_cells[1].text = str(i[2])
+                row_cells[2].text = str(i[3])
+                row_cells[3].text = str(i[4])
+                row_cells[4].text = str(i[5])
+                row_cells[5].text = str(i[6])
+                row_cells[6].text = str(i[7])
+                row_cells[7].text = str(i[8])
+                row_cells[8].text = str(i[9])
+
+        doc.add_page_break()
+
+        
+        doc.save('demo.docx')
+        done = tkmb.showinfo("Done!", "Saved!")
+    gwin = tk.CTk()
+    gwin.title("Generate A Report Card")
+    gwin.geometry("400x600")
+    gwin.resizable(width=False, height= False)
+    stuid = tk.CTkEntry(gwin, placeholder_text="Enter the student id")
+    stuid.place(x=100, y = 100)
+    stuid.place_configure(width=200, height = 60, bordermode="outside")
+    submitb = tk.CTkButton(gwin, text="Submit", command=dummyfunc)
+    submitb.place(x=100, y= 200)
+    gwin.mainloop()
+
+
+    
+    
+    
+
+
+    
+
+
+    
+    
 
 
 def student(sid):
@@ -496,7 +543,39 @@ def getval():
             res.append(f"{i}" f"{chr(j)}")
     return res
 
+def t_mksadd():
+    def change_marks():
+        examval = exam.get() ; entryval = entry.get(); markval = mark.get()
+    
+        q = 'update studentmark set {} = {} where sid = {}'.format(examval, markval,entryval)
+        cur.execute(q)
+        donewindow_messagebox = tkmb.showinfo("Done!","The record has been updated!")
+    
+    mksadd = tk.CTk()
+    mksadd.geometry("800x600")
+    mksadd.resizable(width = False, height = False)
+    mksadd.title("Modify Marks")
+    cb = ttk.Combobox(master = mksadd, values = ["1A" , "1B"], state='readonly', justify = 'left', width=30)
+    cb.pack(padx = 5, pady = 5)
+    cb.set("Select class")
+    
 
+    entry = tk.CTkEntry(mksadd, width=200, placeholder_text='Enter the roll number')
+    entry.focus()
+    entry.pack()
+    
+    exam = ttk.Combobox(mksadd, width = 30, values = ["ut1_sub1",'ut1_sub2','ut1_sub3','ut1_sub4','ut1_sub5','ut2_sub1','ut2_sub2','ut2_sub3','ut2_sub4','ut2_sub5','ut3_sub1','ut3_sub2','ut3_sub3','ut3_sub4','ut3_sub5','qt1_sub1','qt1_sub2','qt1_sub3','qt1_sub4','qt1_sub5','ut4_sub1','ut4_sub2','ut4_sub3','ut4_sub4','ut4_sub5','ut5_sub1','ut5_sub2','ut5_sub3','ut5_sub4','ut5_sub5','ht1_sub1','ht1_sub2','ht1_sub3','ht1_sub4','ht1_sub5','at1_sub1','at1_sub2','at1_sub3','at1_sub4','at1_sub5'], state='readonly')
+    exam.pack(padx = 5, pady = 5)
+    exam.set("Select test")
+    
+    mark = tk.CTkEntry(mksadd, width = 200, placeholder_text="Enter mark :" )
+    mark.focus()
+    mark.pack()
+    
+    dobut = tk.CTkButton(mksadd, width = 200, text="Click to do the changes", command = change_marks)
+    dobut.pack()
+    
+    mksadd.mainloop()
 loginwin = tk.CTk()
 loginwin.geometry("450x350+500+200")
 loginwin.title("Login Window")
@@ -538,5 +617,10 @@ eyebutton = tk.CTkButton(
     logframe, text="👁", width=10, command=showpass
 )
 eyebutton.grid(row=2, column=1, padx=10, pady=20)
+
+
+
+
+
 
 loginwin.mainloop()
