@@ -434,13 +434,18 @@ def teacher(tid):
                 examval, markval, entryval
             )
             cur.execute(q)
-            donewindow_messagebox = tkmb.showinfo("Done!", "The record has been updated!")
+            donewindow_messagebox = tkmb.showinfo(
+                "Done!", "The record has been updated!"
+            )
 
-        
-        mksadd = tk.CTkFrame(twin)
+        mksadd = tk.CTkFrame(twin, width=800, height=800)
         mksadd.place(x=650, y=200)
         cb = ttk.Combobox(
-            master=mksadd, values=["1A", "1B"], state="readonly", justify="left", width=30
+            master=mksadd,
+            values=["1A", "1B"],
+            state="readonly",
+            justify="left",
+            width=30,
         )
         cb.pack(padx=5, pady=5)
         cb.set("Select class")
@@ -498,6 +503,48 @@ def teacher(tid):
         )
         exam.pack(padx=5, pady=5)
         exam.set("Select test")
+        values = [
+            "ut1_sub1",
+            "ut1_sub2",
+            "ut1_sub3",
+            "ut1_sub4",
+            "ut1_sub5",
+            "ut2_sub1",
+            "ut2_sub2",
+            "ut2_sub3",
+            "ut2_sub4",
+            "ut2_sub5",
+            "ut3_sub1",
+            "ut3_sub2",
+            "ut3_sub3",
+            "ut3_sub4",
+            "ut3_sub5",
+            "qt1_sub1",
+            "qt1_sub2",
+            "qt1_sub3",
+            "qt1_sub4",
+            "qt1_sub5",
+            "ut4_sub1",
+            "ut4_sub2",
+            "ut4_sub3",
+            "ut4_sub4",
+            "ut4_sub5",
+            "ut5_sub1",
+            "ut5_sub2",
+            "ut5_sub3",
+            "ut5_sub4",
+            "ut5_sub5",
+            "ht1_sub1",
+            "ht1_sub2",
+            "ht1_sub3",
+            "ht1_sub4",
+            "ht1_sub5",
+            "at1_sub1",
+            "at1_sub2",
+            "at1_sub3",
+            "at1_sub4",
+            "at1_sub5",
+        ]
 
         mark = tk.CTkEntry(mksadd, width=200, placeholder_text="Enter mark :")
         mark.focus()
@@ -509,7 +556,6 @@ def teacher(tid):
         dobut.pack()
 
         mksadd.mainloop()
-
 
     def generate():
         def dummyfunc():
@@ -544,7 +590,7 @@ def teacher(tid):
             header_cell[7].text = "HT"
             header_cell[8].text = "AT"
 
-            for i in data2:#[(12128,12A,ut1_sub1........)]
+            for i in data2:  # [(12128,12A,ut1_sub1........)]
                 for j in range(0, 5):
                     row_cells = tab.add_row().cells
                     if j == 0:
@@ -601,8 +647,6 @@ def teacher(tid):
                         row_cells[6].text = str(i[31])
                         row_cells[7].text = str(i[36])
                         row_cells[8].text = str(i[41])
-                
-                    
 
             doc.save(f"{id1}.docx")
             tkmb.showinfo("Done!", "Saved!")
@@ -650,8 +694,6 @@ def getval():
     return res
 
 
-
-
 loginwin = tk.CTk()
 loginwin.geometry("450x350+500+200")
 loginwin.title("Login Window")
@@ -659,6 +701,7 @@ loginwin.title("Login Window")
 
 def x(event):
     loginid.focus_set()
+
 
 def y(event):
     loginpass.focus_set()
@@ -699,11 +742,10 @@ def showpass1(event):
 
 
 pass1 = 0
-eyebutton = tk.CTkLabel(logframe, text="👁", width=20,height=20,font=('Arial',20))
+eyebutton = tk.CTkLabel(logframe, text="👁", width=20, height=20, font=("Arial", 20))
 eyebutton.grid(row=2, column=1, padx=10, pady=20)
-eyebutton.bind('<Enter>',showpass1)
-eyebutton.bind('<Leave>',showpass1)
-
+eyebutton.bind("<Enter>", showpass1)
+eyebutton.bind("<Leave>", showpass1)
 
 
 loginwin.mainloop()
