@@ -3,7 +3,7 @@ from tkinter import *  # type: ignore
 from tkinter import ttk
 import mysql.connector
 import tkinter.messagebox as tkmb
-import time
+import docx
 
 tk.set_appearance_mode("dark")
 tk.set_default_color_theme("blue")
@@ -30,12 +30,11 @@ def log_event(event):
     if loginpass.get() == "admin":
         loginwin.destroy()
         admin()
-        
 
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
-            a=loginid.get()
+            a = loginid.get()
             loginwin.destroy()
             teacher(a)
         else:
@@ -43,14 +42,14 @@ def log_event(event):
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
-            a=loginid.get()
+            a = loginid.get()
             loginwin.destroy()
             student(a)
 
         else:
             tkmb.showwarning("Invaild", "Wrong Password")
     else:
-        tkmb.showwarning("Invail ID","ID not Found")
+        tkmb.showwarning("Invail ID", "ID not Found")
 
 
 def log():
@@ -74,7 +73,7 @@ def log():
     elif int(loginid.get()) in tid:
         index = tid.index(int(loginid.get()))
         if loginpass.get() == tpass[index]:
-            a=loginid.get()
+            a = loginid.get()
             loginwin.destroy()
             teacher(a)
         else:
@@ -82,7 +81,7 @@ def log():
     elif int(loginid.get()) in sid:
         index = sid.index(int(loginid.get()))
         if loginpass.get() == spass[index]:
-            a=loginid.get()
+            a = loginid.get()
             loginwin.destroy()
             student(a)
 
@@ -90,6 +89,7 @@ def log():
             tkmb.showwarning("Invaild", "Wrong Password")
     else:
         tkmb.showwarning("Invail ID", "ID Not Found")
+
 
 def admin():
     adwin = tk.CTk()
@@ -254,7 +254,7 @@ def admin():
     for i in range(len(smdata)):
         tree3.insert(parent="", index="end", iid=i, values=smdata[i])  # type: ignore
 
-    #add student bio
+    # add student bio
     inframe = tk.CTkFrame(adstub)
     inframe.pack()
     adidlab = tk.CTkLabel(inframe, text="Admn_Id", font=("Arial", 24))
@@ -306,10 +306,15 @@ def admin():
     )
     mnamen.grid(row=2, column=4, padx=20, pady=30)
 
-    spassl = tk.CTkLabel(inframe,text='Password',font=('Arial',24))
-    spassl.grid(row=3,column=0)
-    spassn = tk.CTkEntry(inframe,placeholder_text='Enter the password of the student',width=260,height=32)
-    spassn.grid(row=3,column=1)
+    spassl = tk.CTkLabel(inframe, text="Password", font=("Arial", 24))
+    spassl.grid(row=3, column=0)
+    spassn = tk.CTkEntry(
+        inframe,
+        placeholder_text="Enter the password of the student",
+        width=260,
+        height=32,
+    )
+    spassn.grid(row=3, column=1)
 
     def submit():
         admn = adiden.get() or "NULL"
@@ -328,23 +333,21 @@ def admin():
         doben.delete(0, END)
         fnamen.delete(0, END)
         mnamen.delete(0, END)
-        spassn.delete(0,END)
+        spassn.delete(0, END)
         tkmb.showinfo("Insert", "Inserted Succesfully")
-        adtab.set('Display Student Bio')
+        adtab.set("Display Student Bio")
         changein()
-        
-
-    
 
     getbut = tk.CTkButton(adstub, text="Submit", command=submit)
     getbut.pack(pady=30)
-    
-    #add teacher
+
+    # add teacher
     def gettb():
-        cur=con.cursor()
-        q='select tid,tname,class_teacher,handling_classes from teacher'
+        cur = con.cursor()
+        q = "select tid,tname,class_teacher,handling_classes from teacher"
         cur.execute(q)
         return cur.fetchall()
+
     def tchangein():
         for j in tree1.get_children():
             tree1.delete(j)
@@ -352,7 +355,6 @@ def admin():
         for i in range(len(inval)):
             tree1.insert(parent="", index="end", iid=i, values=inval[i])
 
-    
     inframe1 = tk.CTkFrame(adtea)
     inframe1.pack()
     tidlab = tk.CTkLabel(inframe1, text="Teacher_Id", font=("Arial", 24))
@@ -372,7 +374,9 @@ def admin():
     )
     tnamen.grid(row=0, column=4, padx=20, pady=30)
 
-    class_teacherlab = tk.CTkLabel(inframe1, text="Class_Teacher_of", font=("Arial", 24))
+    class_teacherlab = tk.CTkLabel(
+        inframe1, text="Class_Teacher_of", font=("Arial", 24)
+    )
     class_teacherlab.grid(row=1, column=0, padx=20, pady=30)
     tclasscombo = ttk.Combobox(inframe1, width=20, values=getval(), state="readonly")
     tclasscombo.grid(row=1, column=1, padx=20, pady=30)
@@ -393,8 +397,6 @@ def admin():
         height=32,
     )
     tpassen.grid(row=2, column=1, padx=20, pady=30)
-
-    
 
     def tsubmit():
         tid = tiden.get() or "NULL"
@@ -417,19 +419,261 @@ def admin():
 
     getbut = tk.CTkButton(adtea, text="Submit", command=tsubmit)
     getbut.pack(pady=30)
-    
-
 
     adwin.mainloop()
 
-    
-    
-    
 
 def teacher(tid):
+    def t_mksadd():
+        def change_marks():
+            examval = exam.get()
+            entryval = entry.get()
+            markval = mark.get()
+
+            q = "update studentmark set {} = {} where sid = {}".format(
+                examval, markval, entryval
+            )
+            cur.execute(q)
+            donewindow_messagebox = tkmb.showinfo(
+                "Done!", "The record has been updated!"
+            )
+
+        mksadd = tk.CTkFrame(twin, width=800, height=800)
+        mksadd.place(x=650, y=200)
+        cb = ttk.Combobox(
+            master=mksadd,
+            values=["1A", "1B"],
+            state="readonly",
+            justify="left",
+            width=30,
+        )
+        cb.pack(padx=5, pady=5)
+        cb.set("Select class")
+
+        entry = tk.CTkEntry(mksadd, width=200, placeholder_text="Enter the roll number")
+        entry.focus()
+        entry.pack()
+
+        exam = ttk.Combobox(
+            mksadd,
+            width=30,
+            values=[
+                "ut1_sub1",
+                "ut1_sub2",
+                "ut1_sub3",
+                "ut1_sub4",
+                "ut1_sub5",
+                "ut2_sub1",
+                "ut2_sub2",
+                "ut2_sub3",
+                "ut2_sub4",
+                "ut2_sub5",
+                "ut3_sub1",
+                "ut3_sub2",
+                "ut3_sub3",
+                "ut3_sub4",
+                "ut3_sub5",
+                "qt1_sub1",
+                "qt1_sub2",
+                "qt1_sub3",
+                "qt1_sub4",
+                "qt1_sub5",
+                "ut4_sub1",
+                "ut4_sub2",
+                "ut4_sub3",
+                "ut4_sub4",
+                "ut4_sub5",
+                "ut5_sub1",
+                "ut5_sub2",
+                "ut5_sub3",
+                "ut5_sub4",
+                "ut5_sub5",
+                "ht1_sub1",
+                "ht1_sub2",
+                "ht1_sub3",
+                "ht1_sub4",
+                "ht1_sub5",
+                "at1_sub1",
+                "at1_sub2",
+                "at1_sub3",
+                "at1_sub4",
+                "at1_sub5",
+            ],
+            state="readonly",
+        )
+        exam.pack(padx=5, pady=5)
+        exam.set("Select test")
+        values = [
+            "ut1_sub1",
+            "ut1_sub2",
+            "ut1_sub3",
+            "ut1_sub4",
+            "ut1_sub5",
+            "ut2_sub1",
+            "ut2_sub2",
+            "ut2_sub3",
+            "ut2_sub4",
+            "ut2_sub5",
+            "ut3_sub1",
+            "ut3_sub2",
+            "ut3_sub3",
+            "ut3_sub4",
+            "ut3_sub5",
+            "qt1_sub1",
+            "qt1_sub2",
+            "qt1_sub3",
+            "qt1_sub4",
+            "qt1_sub5",
+            "ut4_sub1",
+            "ut4_sub2",
+            "ut4_sub3",
+            "ut4_sub4",
+            "ut4_sub5",
+            "ut5_sub1",
+            "ut5_sub2",
+            "ut5_sub3",
+            "ut5_sub4",
+            "ut5_sub5",
+            "ht1_sub1",
+            "ht1_sub2",
+            "ht1_sub3",
+            "ht1_sub4",
+            "ht1_sub5",
+            "at1_sub1",
+            "at1_sub2",
+            "at1_sub3",
+            "at1_sub4",
+            "at1_sub5",
+        ]
+
+        mark = tk.CTkEntry(mksadd, width=200, placeholder_text="Enter mark :")
+        mark.focus()
+        mark.pack()
+
+        dobut = tk.CTkButton(
+            mksadd, width=200, text="Click to do the changes", command=change_marks
+        )
+        dobut.pack()
+
+        mksadd.mainloop()
+
+    def generate():
+        def dummyfunc():
+            id1 = stuid.get()
+            q1 = f"select * from studentbio where sid = {id1}"
+            cur.execute(q1)
+            data1 = cur.fetchall()
+            q2 = f"select * from studentmark where sid = {id1}"
+            cur.execute(q2)
+            data2 = cur.fetchall()
+            doc = docx.Document()
+            doc.add_heading("Report Card", 0)
+            doc.add_heading("BIODATA", level=1)
+            doc.add_paragraph(f"Father name : {data1[0][5]}")
+            doc.add_paragraph(f"Mother's name : {data1[0][6]}")
+            doc.add_paragraph(f"Student Name : {data1[0][2]}")
+            doc.add_paragraph(f"Class and Section : {data1[0][3]}")
+            doc.add_paragraph(f"Date Of Birth : {data1[0][4]}")
+            # doc.add_page_break()
+            doc.add_heading("Marks", level=1)
+            record = data1[0]
+            tab = doc.add_table(rows=1, cols=9)
+            # tab.style = 'Colorful List'
+            header_cell = tab.rows[0].cells
+            header_cell[0].text = "Subject"
+            header_cell[1].text = "UT-1"
+            header_cell[2].text = "UT-2"
+            header_cell[3].text = "UT-3"
+            header_cell[4].text = "QT"
+            header_cell[5].text = "UT-4"
+            header_cell[6].text = "UT-5"
+            header_cell[7].text = "HT"
+            header_cell[8].text = "AT"
+
+            for i in data2:  # [(12128,12A,ut1_sub1........)]
+                for j in range(0, 5):
+                    row_cells = tab.add_row().cells
+                    if j == 0:
+                        row_cells[0].text = "Sub1"
+                        row_cells[1].text = str(i[2])
+                        row_cells[2].text = str(i[7])
+                        row_cells[3].text = str(i[12])
+                        row_cells[4].text = str(i[17])
+                        row_cells[5].text = str(i[22])
+                        row_cells[6].text = str(i[27])
+                        row_cells[7].text = str(i[32])
+                        row_cells[8].text = str(i[37])
+
+                    elif j == 1:
+                        row_cells[0].text = "Sub2"
+                        row_cells[1].text = str(i[3])
+                        row_cells[2].text = str(i[8])
+                        row_cells[3].text = str(i[13])
+                        row_cells[4].text = str(i[18])
+                        row_cells[5].text = str(i[23])
+                        row_cells[6].text = str(i[28])
+                        row_cells[7].text = str(i[33])
+                        row_cells[8].text = str(i[38])
+
+                    elif j == 2:
+                        row_cells[0].text = "Sub3"
+                        row_cells[1].text = str(i[4])
+                        row_cells[2].text = str(i[9])
+                        row_cells[3].text = str(i[14])
+                        row_cells[4].text = str(i[19])
+                        row_cells[5].text = str(i[24])
+                        row_cells[6].text = str(i[29])
+                        row_cells[7].text = str(i[34])
+                        row_cells[8].text = str(i[39])
+
+                    elif j == 3:
+                        row_cells[0].text = "Sub4"
+                        row_cells[1].text = str(i[5])
+                        row_cells[2].text = str(i[10])
+                        row_cells[3].text = str(i[15])
+                        row_cells[4].text = str(i[20])
+                        row_cells[5].text = str(i[25])
+                        row_cells[6].text = str(i[30])
+                        row_cells[7].text = str(i[35])
+                        row_cells[8].text = str(i[40])
+
+                    elif j == 4:
+                        row_cells[0].text = "Sub5"
+                        row_cells[1].text = str(i[6])
+                        row_cells[2].text = str(i[11])
+                        row_cells[3].text = str(i[16])
+                        row_cells[4].text = str(i[21])
+                        row_cells[5].text = str(i[26])
+                        row_cells[6].text = str(i[31])
+                        row_cells[7].text = str(i[36])
+                        row_cells[8].text = str(i[41])
+
+            doc.save(f"{id1}.docx")
+            tkmb.showinfo("Done!", "Saved!")
+
+        gwin = tk.CTkFrame(twin, width=500, height=450)
+        gwin.place(x=650, y=200)
+        stuid = tk.CTkEntry(gwin, placeholder_text="Enter the student id")
+        stuid.pack(padx=20, pady=30)
+        submitb = tk.CTkButton(gwin, text="Submit", command=dummyfunc)
+        submitb.pack(padx=20, pady=30)
+
     twin = tk.CTk()
     twin.state("zoomed")
     twin.geometry("1300x700+0+0")
+
+    tcode = tk.CTkLabel(twin, text=f"Teacher Code\n{tid}", font=("Arial", 25))
+    tcode.place(x=100, y=300)
+
+    option_addmks = tk.CTkButton(
+        master=twin, text="Modify Marks", command=t_mksadd, hover=True
+    )
+    option_addmks.place(x=300, y=300)
+
+    option_generaterpcard = tk.CTkButton(
+        master=twin, text="Generate a report card", command=generate
+    )
+    option_generaterpcard.place(x=450, y=300)
     twin.title(tid)
     twin.mainloop()
 
@@ -438,7 +682,7 @@ def student(sid):
     swin = tk.CTk()
     swin.geometry("1300x700+0+0")
     swin.title(sid)
-    
+
     swin.mainloop()
 
 
@@ -454,42 +698,54 @@ loginwin = tk.CTk()
 loginwin.geometry("450x350+500+200")
 loginwin.title("Login Window")
 
+
+def x(event):
+    loginid.focus_set()
+
+
+def y(event):
+    loginpass.focus_set()
+
+
 logframe = tk.CTkFrame(loginwin, width=400, height=300, fg_color="#242424")
 logframe.pack()
 
 label1 = tk.CTkLabel(logframe, text="    Login", font=("Arial", 35))
 label1.grid(row=0, column=0, padx=30, pady=30)
 
-def x():
-    loginid.focus_set()
 
 loginid = tk.CTkEntry(logframe, placeholder_text="Enter your Id", width=250)
 loginid.grid(row=1, column=0, padx=10, pady=20)
-x()
-loginid.bind('<Return>',lambda x:loginpass.focus_set())
+loginid.bind("<Enter>", x)
+
+loginid.bind("<Return>", lambda x: loginpass.focus_set())
 
 loginpass = tk.CTkEntry(
     logframe, placeholder_text="Enter your password", width=250, show="*"
 )
 loginpass.grid(row=2, column=0, padx=10, pady=10)
 loginpass.bind("<Return>", command=log_event)
+loginpass.bind("<Enter>", y)
 
 logbutton = tk.CTkButton(logframe, text="Login", command=log)
 logbutton.grid(row=3, column=0, padx=20, pady=20)
 
-def showpass():
+
+def showpass1(event):
     global pass1
-    if pass1==0:
-        loginpass.configure(show='')
-        pass1=1
+    if pass1 == 0:
+        loginpass.configure(show="")
+        pass1 = 1
     else:
-        loginpass.configure(show='*')
-        pass1=0
+        loginpass.configure(show="*")
+        pass1 = 0
+
 
 pass1 = 0
-eyebutton = tk.CTkButton(
-    logframe, text="👁", width=10, command=showpass
-)
+eyebutton = tk.CTkLabel(logframe, text="👁", width=20, height=20, font=("Arial", 20))
 eyebutton.grid(row=2, column=1, padx=10, pady=20)
+eyebutton.bind("<Enter>", showpass1)
+eyebutton.bind("<Leave>", showpass1)
+
 
 loginwin.mainloop()
